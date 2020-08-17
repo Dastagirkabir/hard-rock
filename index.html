@@ -1,0 +1,174 @@
+<!doctype html>
+<html lang="en">
+
+<head>
+    <title>Hard Rock Solution - Song Lyric App</title>
+    <!-- Required meta tags -->
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+    <!-- Favicon -->
+    <link rel="shortcut icon" href="favicon.ico" type="image/x-icon">
+    <!-- Bootstrap CSS -->
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css">
+    <!-- Custom css -->
+    <link rel="stylesheet" href="style.css">
+</head>
+
+<body>
+    <div class="container">
+        <nav class="navbar  navbar-dark my-3">
+            <a class="navbar-brand" href="#">
+                <img src="images/logo.png" alt="Hard Rock Solution">
+            </a>
+            <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#collapsibleNavId"
+                aria-controls="collapsibleNavId" aria-expanded="false" aria-label="Toggle navigation">
+                <img src="images/toggler-icon.svg" alt="">
+            </button>
+            <div class="collapse navbar-collapse" id="collapsibleNavId">
+                <ul class="navbar-nav ml-auto mt-2 mt-lg-0">
+                    <li class="nav-item active">
+                        <a class="nav-link" href="#">Home <span class="sr-only">(current)</span></a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="#">Link</a>
+                    </li>
+                    <li class="nav-item dropdown">
+                        <a class="nav-link dropdown-toggle" href="#" id="dropdownId" data-toggle="dropdown"
+                            aria-haspopup="true" aria-expanded="false">Dropdown</a>
+                        <div class="dropdown-menu" aria-labelledby="dropdownId">
+                            <a class="dropdown-item" href="#">Action 1</a>
+                            <a class="dropdown-item" href="#">Action 2</a>
+                        </div>
+                    </li>
+                </ul>
+            </div>
+        </nav>
+
+        <main class="content-area">
+            <div class="search-bar col-md-6 mx-auto">
+                <h1 class="text-center">Lyrics Search</h1>
+                <div class="search-box my-5">
+                    <input id="search-name" type="text" class="form-control" placeholder="Enter your artist song name">
+                    <button id="search-btn" class="btn btn-success search-btn">Search</button>   
+                </div>    
+                
+            </div>
+            <!-- === Simple results === -->
+            <!-- <div class="d-flex justify-content-center">
+                <div id="search-result" class="">
+
+
+                </div>
+            </div> -->
+            <div id="search-result"  class="search-result col-md-8 mx-auto py-4">
+                <!-- single result -->
+               
+            </div>
+
+            <!-- Single Lyrics -->
+            <div id="lyrics-show" class="single-lyrics text-center">
+                <button class="btn go-back">&lsaquo;</button>
+                <h2 class="text-success mb-4"></h2>
+                <pre class="lyric text-white">
+
+                </pre>
+            </div>
+
+            <!-- Optional JavaScript -->
+            <!-- jQuery first, then Popper.js, then Bootstrap JS -->
+            <script src="https://code.jquery.com/jquery-3.3.1.slim.min.js"></script>
+            <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.7/umd/popper.min.js"></script>
+            <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/js/bootstrap.min.js"></script>
+
+            <!-- Custom Script Here -->
+
+            <script>
+
+                document.getElementById('search-btn').addEventListener('click', function () {
+                    var searchResult = document.getElementById('search-result')
+                    searchResult.innerHTML = ' ';
+                    const songName = document.getElementById('search-name').value;
+
+                    fetch('https://api.lyrics.ovh/suggest/' + songName)
+                        .then(res => res.json())
+                        .then(data => {
+
+                            console.log(data.data[0])
+
+                            for (let index = 0; index < 10; index++) {
+                                
+                                
+                                var parentDiv = document.createElement("DIV")
+                                parentDiv.classList.add('single-result')
+                                parentDiv.classList.add('row')
+                                parentDiv.classList.add('align-items-center')
+                                parentDiv.classList.add('my-3')
+                                parentDiv.classList.add('p-3')
+
+                                var div = document.createElement("DIV")
+                                div.classList.add('col-md-9')
+
+                                var h3 = document.createElement("H3")
+                                h3.classList.add('lyrics-name')
+                                    h3.innerText = data.data[index].title;
+                                        div.appendChild(h3);
+
+                                var p = document.createElement("P");
+                                p.classList.add('author')
+                                p.classList.add('lead')
+                                p.append(' Album By ')
+                                var span = document.createElement("SPAN")
+                                    span.innerText = data.data[index].artist.name + '   ';
+                                        p.appendChild(span)
+
+                                    div.appendChild(p);
+
+                                var div2 = document.createElement("DIV")
+                                div2.classList.add('col-md-3')
+                                div2.classList.add('text-md-right')
+                                div2.classList.add('text-center')
+
+                                var button = document.createElement("BUTTON")
+                                button.classList.add('btn')
+                                button.classList.add('btn-success')
+                                button.id = 'lyrics-btn'
+                                     button.innerText = 'Get Lyrics'
+                                        div2.appendChild(button)
+
+                                parentDiv.appendChild(div)
+                                parentDiv.appendChild(div2)
+                                searchResult.appendChild(parentDiv)
+ 
+
+                                button.addEventListener('click', function () {
+                                    // console.log( data.data[index].id)
+                                    var lyricsShow = document.getElementById('lyrics-show')
+                                    lyricsShow.innerHTML = ' ';
+                                    
+                                    var h2 = document.createElement("H2");
+                                    h2.classList.add('text-success')
+                                    h2.classList.add('mb-4')
+
+                                    h2.innerText = data.data[index].title;
+                                    lyricsShow.appendChild(h2)
+
+                                    var pre = document.createElement("PRE");
+                                    pre.classList.add('lyric')
+                                    pre.classList.add('text-white')
+                                    
+                                    fetch('https://api.lyrics.ovh/v1/' + data.data[index].artist.name + '/' + data.data[index].title + '')
+                                        .then(res => res.json())
+                                        .then(data => {
+                    
+                                            pre.innerText = data.lyrics;
+                                            lyricsShow.appendChild(pre)
+                                        
+                                        })
+                                })
+                            }
+                        })
+                })
+
+            </script>
+</body>
+</html>
